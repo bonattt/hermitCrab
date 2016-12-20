@@ -1,5 +1,5 @@
 import importlib
-from ex_env.plugin_commands import InstallCommand
+from ex_env.plugin_commands import InstallCommand, UninstallCommand
 
 
 class Package():
@@ -7,15 +7,16 @@ class Package():
     restricted_names = ["install"]
     restricted_fields = ["_env_", "_dir_"]
 
-    def __init__(self, name, fields={}, commands={}):
+    def __init__(self, name, root_dir='./', fields={}, commands={}):
         self.fields = fields
         self.commands = commands
         self.name = name
 
         self.fields["_env_"] = self
-        self.fields["_dir_"] = './'
+        self.fields["_dir_"] = root_dir
 
         self.commands["install"] = InstallCommand()
+        self.commands["uninstall"] = UninstallCommand()
 
     def import_plugins(self, rootdir):
         file = open(rootdir + 'manifest')
@@ -93,6 +94,10 @@ class Package():
             print("that command alread exists in package", self.name)
         else:
             self.commands[name] = command
+
+    def remove_command(self, name):
+        if name in self.commands:
+            self.commands.pop(name)
 
     def add_field(self, name, value):
         if name in self.restricted_fields:
