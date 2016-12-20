@@ -43,7 +43,7 @@ class InstallCommand():
         # print('abs: ', abspath)
         shutil.copyfile(abspath, copy_to_path)
         man_file = open(fields['_dir_'] + 'manifest', 'a')
-        man_file.write(filename)
+        man_file.write(filename + '\n')
         man_file.close()
         print('successfully installed"' + filename + '"')
         fields['_env_'].import_new_plugin(filename)
@@ -114,8 +114,10 @@ class UninstallCommand():
         deleted_module = importlib.import_module('plugins.' + plugin_name)
         deleted_module.remove_from(fields["_env_"])
         man_file = open(fields['_dir_'] + 'manifest', 'w')
+        msg = ""
         for line in file_text:
-            man_file.write(line)
+            msg = msg + line + '\n'
+        man_file.write(msg[:-1])
         man_file.close()
         os.remove(fields['_dir_'] + 'plugins/' + plugin_filename)
         print('successfully removed ' + plugin_name)
