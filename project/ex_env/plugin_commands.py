@@ -55,16 +55,29 @@ class InstallCommand():
 
 
 def module_complies_to_interface(file_path):
-    # required_functions = {'import_to': 1, 'remove_from': 1}
     complies = True
     file_name = file_path.split('\\')[-1]
     file = open(file_path, 'rt')
     tree = ast.parse(file.read(), filename=file_name)
-    impl_funcs = top_level_function_names(tree.body)
+
+    impl_func_names = top_level_function_names(tree.body)
     for func in InstallCommand.required_functions:
-        if not func in impl_funcs:
+        if not func in impl_func_names:
             complies = False
             print('ERROR: required function "' + func + '" not implemented in plugin')
+
+    impl_funcs = top_level_functions(tree.body)
+    for func in impl_funcs:
+        if func.name in InstallCommand.required_functions:
+            argsExpected = InstallCommand.required_functions[func.name]
+            if func.args != argsExpected:
+                # complies = False
+                print('WARNING: function "' + func.name + '" has ' + str(func.args) +
+                      ' args and should have ' + str(argsExpected))
+            else:
+                print('function "' + func.name + '" complies with expected standards')
+        else:
+            print('function "' + func.name + '" not a required function')
 
     file.close()
     return complies
