@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-class ImportCommand():
+class InstallCommand():
 
     def execute(self, args, fields):
         # todo implement package import

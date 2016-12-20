@@ -1,5 +1,5 @@
 import importlib
-from ex_env.importCommand import ImportCommand
+from ex_env.plugin_commands import InstallCommand
 
 
 class Package():
@@ -15,7 +15,7 @@ class Package():
         self.fields["_env_"] = self
         self.fields["_dir_"] = './'
 
-        self.commands["install"] = ImportCommand()
+        self.commands["install"] = InstallCommand()
 
     def import_plugins(self, rootdir):
         file = open(rootdir + 'manifest')
