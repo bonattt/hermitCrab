@@ -23,24 +23,28 @@ class Package():
         for plugin_file in plugins:
             if plugin_file == '':
                 break
-            try:
-                if not plugin_file.endswith('.py'):
-                    print("ERROR: plugin manifest contains non-python file '" + plugin_file + "'!!")
-                    continue
-                plugin_module = plugin_file[:-3] # remove .py
-                mod = importlib.import_module('plugins.' + plugin_module)
-                mod.import_to(self)
-                print("successfully imported module '" + plugin_module + "'")
-            except Exception as e:
-                print("an error occurred while importing:")
-                print(e)
-            except AttributeError as e:
-                print("an error occurred while importing:")
-                print(e)
-                print("make sure the function import_to(environment) is defined in the module you are trying to import.")
+            self.import_new_plugin(plugin_file)
 
         file.close()
         pass
+
+    def import_new_plugin(self, plugin_file):
+        try:
+            if not plugin_file.endswith('.py'):
+                print("ERROR: tried to import non-python file '" + plugin_file + "'!!")
+                return
+            plugin_module = plugin_file[:-3] # remove .py
+            mod = importlib.import_module('plugins.' + plugin_module)
+            mod.import_to(self)
+            print("successfully imported module '" + plugin_module + "'")
+        except Exception as e:
+            print("an error occurred while importing:")
+            print(e)
+        except AttributeError as e:
+            print("an error occurred while importing:")
+            print(e)
+            print("make sure the function import_to(environment) is defined in the module you are trying to import.")
+
 
     def run(self):
         while True:

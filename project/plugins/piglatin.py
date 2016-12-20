@@ -2,6 +2,7 @@ from ex_env import Package
 
 def import_to(env):
     env.add_command(PigLatinCommand(), "pig")
+    env.add_command(PigLatinCommand(), "pig-latin")
 
 
 class PigLatinCommand():
