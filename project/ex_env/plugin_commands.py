@@ -1,9 +1,13 @@
 import os
 import shutil
 import importlib
+import ast
+import sys
 
 
 class InstallCommand():
+
+    required_functions = {'import_to': 1, 'remove_from': 1}
 
     def execute(self, args, fields):
         # todo implement package import
@@ -23,12 +27,18 @@ class InstallCommand():
             print("the file '" + filename + "' already exists, import aborted!")
             return
 
+        if not module_complies_to_interface(abspath):
+            print("install aborted")
+            return
+
         if os.path.isdir(abspath):
             print('cannot import a directory!')
         elif filename.endswith('.py'):
-            self.import_single_file(abspath, copy_to_path, filename, fields)
+            self.install_single_file(abspath, copy_to_path, filename, fields)
+        else:
+            print("aborting unknown install ...")
 
-    def import_single_file(self, abspath, copy_to_path, filename, fields):
+    def install_single_file(self, abspath, copy_to_path, filename, fields):
         # print('copy:', copy_to_path)
         # print('abs: ', abspath)
         shutil.copyfile(abspath, copy_to_path)
@@ -42,6 +52,34 @@ class InstallCommand():
         print("use import to easily import new python modules")
         print("import <filepath>")
         print("this function will copy the file you wish to install to ")
+
+
+def module_complies_to_interface(file_path):
+    # required_functions = {'import_to': 1, 'remove_from': 1}
+    complies = True
+    file_name = file_path.split('\\')[-1]
+    file = open(file_path, 'rt')
+    tree = ast.parse(file.read(), filename=file_name)
+    impl_funcs = top_level_function_names(tree.body)
+    for func in InstallCommand.required_functions:
+        if not func in impl_funcs:
+            complies = False
+            print('ERROR: required function "' + func + '" not implemented in plugin')
+
+    file.close()
+    return complies
+
+
+def top_level_function_names(body):
+    ls = []
+    for obj in body:
+        if isinstance(obj, ast.FunctionDef):
+            ls.append(obj.name)
+    return ls
+
+
+def top_level_functions(body):
+    return (f for f in body if isinstance(f, ast.FunctionDef))
 
 
 class UninstallCommand():
