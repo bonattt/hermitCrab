@@ -1,4 +1,4 @@
-Hermit Crap
+Hermit Crab
 
 Hermit Crab is a pure plugin console program designed to
 provide a simple interface and architecture, allowing 
